@@ -124,7 +124,7 @@ echo YOUR_GITHUB_PAT | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-s
 Example:
 
 ```bash
-echo ghp_xxxxx | docker login ghcr.io -u aadilahammad86 --password-stdin
+echo ghp_xxxxx | docker login ghcr.io -u username --password-stdin
 ```
 
 ✅ You should see:
@@ -146,7 +146,7 @@ ghcr.io/<USERNAME>/<IMAGE_NAME>:<TAG>
 Example:
 
 ```bash
-docker tag myapp:latest ghcr.io/aadilahammad86/docker_stuff:1.0.0
+docker tag myapp:latest ghcr.io/username/docker_stuff:1.0.0
 ```
 
 ---
@@ -154,13 +154,13 @@ docker tag myapp:latest ghcr.io/aadilahammad86/docker_stuff:1.0.0
 ## ☁️ 9️⃣ Push to GHCR
 
 ```bash
-docker push ghcr.io/aadilahammad86/docker_stuff:1.0.0
+docker push ghcr.io/username/docker_stuff:1.0.0
 ```
 
 You’ll see:
 
 ```
-The push refers to repository [ghcr.io/aadilahammad86/docker_stuff]
+The push refers to repository [ghcr.io/username/docker_stuff]
 ...
 pushed: sha256:xxxxxxxxxxxx
 ```
@@ -172,7 +172,7 @@ pushed: sha256:xxxxxxxxxxxx
 This step is **done post-push** via the GitHub UI.
 
 1. Go to:
-   👉 `https://github.com/aadilahammad86?tab=packages`
+   👉 `https://github.com/username?tab=packages`
 2. Click your new package (`docker_stuff`)
 3. On the right side → click **Package Settings**
 4. Scroll down to **Repository Link**
@@ -201,9 +201,9 @@ Now anyone can pull without logging in.
 On any machine with Docker installed:
 
 ```bash
-docker login ghcr.io -u aadilahammad86 --password-stdin
-docker pull ghcr.io/aadilahammad86/docker_stuff:1.0.0
-docker run -d -p 8080:8080 ghcr.io/aadilahammad86/docker_stuff:1.0.0
+echo YOUR_GITHUB_PAT | docker login ghcr.io -u username --password-stdin
+docker pull ghcr.io/username/docker_stuff:1.0.0
+docker run -d -p 8080:8080 ghcr.io/username/docker_stuff:1.0.0
 ```
 
 💡 If your image is public, you can skip the login step.
