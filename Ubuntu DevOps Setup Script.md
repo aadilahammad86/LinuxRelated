@@ -129,7 +129,7 @@ check_success "Agent directory created" "Failed to create agent directory"
 # Download Azure DevOps agent
 print_status "Downloading Azure DevOps agent..."
 cd ~/myagent
-wget -q https://download.agent.dev.azure.com/agent/4.261.0/vsts-agent-linux-x64-4.261.0.tar.gz
+wget https://download.agent.dev.azure.com/agent/4.261.0/vsts-agent-linux-x64-4.261.0.tar.gz
 check_success "Agent downloaded" "Failed to download agent"
 
 # Extract agent
