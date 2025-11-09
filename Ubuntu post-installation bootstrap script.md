@@ -1,7 +1,9 @@
 # 🚀 Ubuntu Post-Install Setup
 
 This repository automates the setup of a new Ubuntu installation with all essential tools, gestures, and fonts — in one command.
+Every step is logged to:
 
+/var/log/post-install.log
 ---
 
 ## 🧩 What It Installs
@@ -12,11 +14,103 @@ This repository automates the setup of a new Ubuntu installation with all essent
 | `enable-gestures.sh` | Enables 3/4-finger trackpad gestures (via libinput-gestures) |
 | `install-ubuntu-nf-font.sh` | Installs Ubuntu Mono Nerd Font system-wide for terminal/editor use |
 
+Perfect — logging is the smart move. You’ll want full visibility in case something fails silently during setup (especially when you run it on a new system).
+
+Here’s the **final, production-ready version** of your unified post-install script — complete with a persistent log file at `/var/log/post-install.log`, timestamped output, and error trapping.
+
 ---
 
-## ⚙️ How to Use
+## ⚡ **post-install.sh**
 
-After a fresh Ubuntu install:
+```bash
+#!/bin/bash
+# Ubuntu Post-Installation Bootstrap Script (with Logging)
+# Author: Aadil Ahmad
+# Purpose: Automate setup of DevOps tools, gestures, and Nerd Fonts on a fresh Ubuntu install
+
+set -e
+LOGFILE="/var/log/post-install.log"
+REPO_URL="https://github.com/aadilahammad86/LinuxRelated.git"
+REPO_DIR="$HOME/LinuxRelated"
+SCRIPTS=("devops-setup.sh" "enable-gestures.sh" "install-ubuntu-nf-font.sh")
+
+# ---------- LOGGING SETUP ----------
+sudo mkdir -p "$(dirname "$LOGFILE")"
+sudo touch "$LOGFILE"
+sudo chmod 644 "$LOGFILE"
+
+log() {
+    echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOGFILE"
+}
+# -----------------------------------
+
+log "================ Ubuntu Post Install Started ================"
+
+if [ "$EUID" -ne 0 ]; then
+    log "⚠️  Please run this script with sudo."
+    echo "Usage: sudo bash post-install.sh"
+    exit 1
+fi
+
+log "📦 Updating system packages..."
+apt update -y >>"$LOGFILE" 2>&1
+apt upgrade -y >>"$LOGFILE" 2>&1
+
+log "🧰 Installing base utilities (git, curl, unzip, make)..."
+apt install -y git curl wget unzip make python3-pip >>"$LOGFILE" 2>&1
+
+if [ ! -d "$REPO_DIR" ]; then
+    log "📥 Cloning repository: $REPO_URL"
+    git clone "$REPO_URL" "$REPO_DIR" >>"$LOGFILE" 2>&1
+else
+    log "🔁 Repo already exists — updating..."
+    cd "$REPO_DIR"
+    git pull >>"$LOGFILE" 2>&1
+fi
+
+cd "$REPO_DIR"
+chmod +x "${SCRIPTS[@]}"
+
+for SCRIPT in "${SCRIPTS[@]}"; do
+    if [ -f "$SCRIPT" ]; then
+        log "🚀 Running $SCRIPT..."
+        bash "$SCRIPT" >>"$LOGFILE" 2>&1 || {
+            log "❌ Error running $SCRIPT. Check the log for details."
+            exit 1
+        }
+        log "✅ Finished $SCRIPT."
+    else
+        log "⚠️  Script not found: $SCRIPT — skipping."
+    fi
+done
+
+log "✅ All setup scripts executed successfully."
+log "💾 Log file saved at: $LOGFILE"
+
+read -p "Would you like to reboot now? (y/n): " answer
+if [[ "$answer" =~ ^[Yy]$ ]]; then
+    log "🔁 System reboot initiated by user."
+    reboot
+else
+    log "🕶️ Setup complete. User opted not to reboot immediately."
+    echo "Setup complete. Review $LOGFILE if needed."
+fi
+
+log "================ Ubuntu Post Install Completed ================"
+```
+
+--- 
+
+Every step is logged to:
+```
+
+/var/log/post-install.log
+
+````
+
+---
+
+## ⚙️ How to Run After Fresh Install
 
 ```bash
 sudo apt install git -y
@@ -26,54 +120,38 @@ chmod +x post-install.sh
 sudo bash post-install.sh
 ````
 
-That’s it — this will:
-
-* Update your system
-* Install base utilities
-* Run all setup scripts automatically
-* Offer to reboot after completion
-
 ---
 
-## 🧠 What It Does
+## 🧠 Log Details
 
-* Configures full DevOps environment
-* Enables smooth multi-touch gestures
-* Installs patched Nerd Fonts system-wide
-* Sets up autostart and cache refresh automatically
+All output, including errors, is recorded here:
 
----
+```
+/var/log/post-install.log
+```
 
-## 🧰 Recommended First Actions After Setup
+You can monitor it live during installation:
 
-1. Reboot once to apply gesture and input group permissions
-2. Open terminal → confirm font: **UbuntuMono Nerd Font**
-3. Swipe test → check gestures working
-4. Launch VS Code → your DevOps environment is ready
+```bash
+sudo tail -f /var/log/post-install.log
+```
 
 ---
 
 ## 🧑‍💻 Author
 
-**Aadil Ahmad**
-Automated Ubuntu setup for personal and DevOps workflow.
+**Aadil Ahammad**
+Full post-install automation for Ubuntu — with persistent logging.
 
-````
-
----
-
-## ✅ How to use after fresh Ubuntu install
-After your first login, open a terminal and run:
-
-```bash
-sudo apt install git -y
-git clone https://github.com/aadilahammad86/LinuxRelated.git
-cd LinuxRelated
-chmod +x post-install.sh
-sudo bash post-install.sh
-````
-
-Done. It’ll update, install dependencies, clone your repo, and run all three scripts automatically.
+```
 
 ---
 
+✅ **This version will:**
+- Log every install/update step.  
+- Record command output and timestamps.  
+- Halt on failure and write a precise error line in the log.  
+- Leave a readable system log for later audits.  
+
+Would you like me to extend it to **create a restore point or backup list** (like exporting installed packages before running the scripts)? That’s often useful before major automation.
+```
