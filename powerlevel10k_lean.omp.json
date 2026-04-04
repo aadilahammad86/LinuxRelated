@@ -11,7 +11,7 @@
             "style": "full"
           },
           "style": "plain",
-          "template": "{{ .Path }} ",
+          "template": "{{ .Path }} | ",
           "type": "path"
         },
         {
@@ -19,13 +19,7 @@
           "style": "plain",
           "template": "{{ .HEAD }} ",
           "type": "git"
-        }
-      ],
-      "type": "prompt"
-    },
-    {
-      "alignment": "right",
-      "segments": [
+        },
         {
           "foreground": "#00fbff",
           "options": {
@@ -33,7 +27,7 @@
             "style": "round"
           },
           "style": "plain",
-          "template": " {{ .FormattedMs }} ",
+          "template": "{{ .FormattedMs }}",
           "type": "executiontime"
         }
       ],
@@ -46,7 +40,7 @@
         {
           "foreground": "#43D426",
           "style": "plain",
-          "template": "\u276f ",
+          "template": "\u276f",
           "type": "text"
         }
       ],
