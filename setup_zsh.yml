@@ -1,0 +1,71 @@
+---
+- name: Set Up Zsh with Oh My Zsh & Powerlevel10k
+  hosts: all
+  become: false # Run as the regular user by default
+  vars:
+    # Gets the username and home directory of the user executing the playbook
+    target_user: "{{ ansible_user_id }}"
+    user_home: "{{ ansible_env.HOME }}"
+
+  tasks:
+    - name: Step 1 & 6 — Install Zsh, Curl, Git, and Powerline fonts
+      become: true # Elevate to root for apt
+      ansible.builtin.apt:
+        name:
+          - zsh
+          - curl
+          - git
+          - fonts-powerline
+        state: present
+        update_cache: yes
+
+    - name: Step 3 — Set Zsh as default shell
+      become: true # Elevate to root to change shell
+      ansible.builtin.user:
+        name: "{{ target_user }}"
+        shell: /usr/bin/zsh
+
+    - name: Step 4 — Check if Oh My Zsh is already installed
+      ansible.builtin.stat:
+        path: "{{ user_home }}/.oh-my-zsh"
+      register: omz_installed
+
+    - name: Step 4 — Install Oh My Zsh
+      ansible.builtin.shell: |
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+      args:
+        executable: /bin/bash
+      when: not omz_installed.stat.exists
+      # The '--unattended' flag prevents OMZ from launching Zsh and blocking Ansible.
+
+    - name: Step 7 — Clone Powerlevel10k theme
+      ansible.builtin.git:
+        repo: https://github.com/romkatv/powerlevel10k.git
+        dest: "{{ user_home }}/.oh-my-zsh/custom/themes/powerlevel10k"
+        depth: 1
+        update: yes
+
+    - name: Step 7 — Set Powerlevel10k as the ZSH theme
+      ansible.builtin.lineinfile:
+        path: "{{ user_home }}/.zshrc"
+        regexp: '^ZSH_THEME=".*"'
+        line: 'ZSH_THEME="powerlevel10k/powerlevel10k"'
+        state: present
+
+    - name: Bonus — Enable default plugins in .zshrc
+      ansible.builtin.lineinfile:
+        path: "{{ user_home }}/.zshrc"
+        regexp: '^plugins=\(.*\)'
+        line: 'plugins=(git docker kubectl)'
+        state: present
+
+    - name: Display final instructions
+      ansible.builtin.debug:
+        msg:
+          - "--------------------------------------------------------"
+          - "SUCCESS: Zsh, Oh My Zsh, and Powerlevel10k are installed!"
+          - "1. Log out and log back in (or restart your terminal)."
+          - "2. Run 'p10k configure' to set up your visual layout."
+          - "--------------------------------------------------------"
+    - name: Reboot to apply changes
+      reboot:

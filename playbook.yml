@@ -1,0 +1,106 @@
+---
+- name: Install Docker Engine on Ubuntu
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Clean up legacy Docker list file
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/docker.list
+        state: absent
+
+    - name: Clean up legacy Docker GPG key
+      ansible.builtin.file:
+        path: /etc/apt/keyrings/docker.gpg
+        state: absent
+
+    - name: Install required packages
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - python3
+          - python3-venv
+          - nginx
+        state: present
+        update_cache: yes
+
+    - name: Ensure apt keyrings directory exists
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Clean up legacy Docker list file
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/docker.list
+        state: absent
+
+    - name: Clean up legacy Docker GPG key
+      ansible.builtin.file:
+        path: /etc/apt/keyrings/docker.gpg
+        state: absent
+    - name: Download Docker GPG key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Add Docker repository (DEB822 format)
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/docker.sources
+        content: |
+          Types: deb
+          URIs: https://download.docker.com/linux/ubuntu
+          Suites: {{ ansible_facts['lsb']['codename'] }}
+          Components: stable
+          Architectures: amd64
+          Signed-By: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Update required repo
+      apt:
+        update_cache: yes
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+    - name: Enable and start Docker
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Verify Docker installation
+      command: docker run hello-world
+      register: hello_output
+      changed_when: false
+
+    - name: Print hello-world output
+      debug:
+        var: hello_output.stdout
+
+    - name: Copy file with owner and permissions
+      ansible.builtin.copy:
+        src: ./index.html
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+    - name: Reboot for applying all changes
+      reboot:
