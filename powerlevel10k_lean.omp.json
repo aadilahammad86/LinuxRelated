@@ -40,7 +40,7 @@
         {
           "foreground": "#43D426",
           "style": "plain",
-          "template": "\u276f",
+          "template": "\u276f ",
           "type": "text"
         }
       ],
