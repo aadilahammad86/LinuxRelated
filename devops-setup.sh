@@ -105,42 +105,13 @@ check_success "Docker service started and enabled" "Failed to start Docker servi
 # Add current user to docker group
 print_status "Adding current user to docker group..."
 sudo usermod -aG docker $USER
+newgrp docker
 check_success "User added to docker group" "Failed to add user to docker group"
 
 # Test Docker installation
 print_status "Testing Docker installation..."
-sudo docker run hello-world
+docker run hello-world
 check_success "Docker test completed" "Docker test failed"
-
-# Create directory for Azure DevOps agent
-print_status "Creating Azure DevOps agent directory..."
-mkdir -p ~/myagent
-check_success "Agent directory created" "Failed to create agent directory"
-
-# Download Azure DevOps agent
-print_status "Downloading Azure DevOps agent..."
-cd ~/myagent
-wget https://download.agent.dev.azure.com/agent/4.261.0/vsts-agent-linux-x64-4.261.0.tar.gz
-check_success "Agent downloaded" "Failed to download agent"
-
-# Extract agent
-print_status "Extracting Azure DevOps agent..."
-tar zxvf vsts-agent-linux-x64-4.261.0.tar.gz
-check_success "Agent extracted" "Failed to extract agent"
-
-# Clean up tar file
-rm vsts-agent-linux-x64-4.261.0.tar.gz
-
-# Make config script executable
-chmod +x config.sh
-
-# Install additional useful tools
-print_status "Installing additional development tools..."
-
-# Install Azure CLI (optional)
-print_status "Installing Azure CLI..."
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-check_success "Azure CLI installed" "Failed to install Azure CLI"
 
 # Install Docker Compose standalone (as backup)
 print_status "Installing Docker Compose standalone..."
@@ -158,15 +129,11 @@ alias dpsa='docker ps -a'
 alias di='docker images'
 alias dlogs='docker logs'
 alias dstop='docker stop'
-alias drm='docker rm'
+alias drm='docker rm -f'
 alias dirm='docker image rm'
 alias dcu='docker-compose up'
 alias dcd='docker-compose down'
 alias dcb='docker-compose build'
-alias agent-status='cd ~/myagent && ./svc.sh status'
-alias agent-start='cd ~/myagent && ./svc.sh start'
-alias agent-stop='cd ~/myagent && ./svc.sh stop'
-alias agent-restart='cd ~/myagent && ./svc.sh restart'
 EOF
 
 # Reload bashrc
@@ -180,29 +147,11 @@ What was installed:
 ✅ System updates and upgrades
 ✅ Essential development tools (git, curl, wget, etc.)
 ✅ Docker Engine with Docker Compose
-✅ Azure CLI
-✅ Azure DevOps agent (downloaded and extracted)
-
-Next steps:
-1. Log out and log back in for docker group permissions to take effect
-2. Configure Azure DevOps agent:
-   cd ~/myagent
-   ./config.sh
-
-3. Follow the prompts with:
-   - Your Azure DevOps organization URL
-   - PAT token (create at: User Settings -> Personal Access Tokens)
-   - Agent pool name
-   - Agent name
-
-4. Start the agent as service:
-   sudo ./svc.sh install
-   sudo ./svc.sh start
+✅ Docker aliases
 
 Useful commands:
 - docker ps                          # List running containers
 - docker-compose up                  # Start docker-compose
-- agent-status                       # Check agent status
 - dps, dpsa, di                      # Docker aliases
 
 Your agent directory: ~/myagent
@@ -217,5 +166,3 @@ echo ""
 print_status "Setup summary saved to: ~/devops-setup-complete.txt"
 print_status "Azure DevOps agent is ready for configuration in: ~/myagent"
 echo ""
-print_status "Next step: Run './config.sh' in ~/myagent directory to configure your Azure DevOps agent"
-print_status "Don't forget to create a PAT token in Azure DevOps first!"
