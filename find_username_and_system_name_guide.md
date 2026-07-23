@@ -8,7 +8,8 @@ A quick, no-tech-skills-needed guide. Just follow the steps below in order.
 
 Click the **Windows icon** on your taskbar (bottom of your screen, usually in the middle or bottom-left).
 
-*(See Picture 1)*
+<img width="779" height="438" alt="canvas" src="https://github.com/user-attachments/assets/a089769a-fc87-40b9-b2bb-873f953e2d03" />
+
 
 ---
 
@@ -18,7 +19,8 @@ Once the Start Menu opens, type **cmd** into the search box at the top.
 
 You'll see **Command Prompt** appear under "Best match."
 
-*(See Picture 2)*
+<img width="779" height="438" alt="canvas1" src="https://github.com/user-attachments/assets/9036d4f3-b9b1-4be2-a351-e3135a858d31" />
+
 
 ---
 
@@ -28,7 +30,7 @@ Click **Open** on the right-hand side (or simply click on the Command Prompt res
 
 A black window will pop up — this is the Command Prompt. Don't worry, it looks technical but you're only going to type two simple words.
 
-*(See Picture 2)*
+<img width="779" height="438" alt="canvas1" src="https://github.com/user-attachments/assets/9036d4f3-b9b1-4be2-a351-e3135a858d31" />
 
 ---
 
@@ -42,7 +44,7 @@ hostname
 
 The line that appears right below it is your **computer (system) name**.
 
-*(See Picture 3)*
+<img width="779" height="438" alt="canvas2" src="https://github.com/user-attachments/assets/3e177745-70e0-4181-bfa3-15996298f957" />
 
 ---
 
@@ -62,7 +64,7 @@ computername\username
 
 The part **after the backslash (\\)** is your username.
 
-*(See Picture 3)*
+<img width="779" height="438" alt="canvas2" src="https://github.com/user-attachments/assets/3e177745-70e0-4181-bfa3-15996298f957" />
 
 ---
 
