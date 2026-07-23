@@ -1,6 +1,6 @@
 # How to Find Your Username and Computer Name
 
-A quick, no-tech-skills-needed guide. Just follow the steps below in order.
+Just follow the steps below in order.
 
 ---
 
